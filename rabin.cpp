@@ -209,7 +209,7 @@ int main()
     string message ="C";
    // cout << "Plain text: " << message << endl;
     ll len = strlen(message.c_str());
-    for(int i=100000;i<200000;i++)
+    for(int i=0;i<100000;i++)
     {
 e.push_back(encrypter(tehk(i+1), n));
         //cout << e[i]<<endl;
@@ -232,7 +232,7 @@ e.push_back(encrypter(tehk(i+1), n));
 //132111
     cout << endl;
 
-    for(int i = 100000; i < 200000; i++)
+    for(int i = 0; i < 100000; i++)
     {
         d.push_back(decrypter(e[i], p, q));
         //if(d[i]==-1)
