@@ -1,3 +1,6 @@
+/*
+This is a modified version of the code which can be found here::https://www.codespeedy.com/rabin-cryptosystem-implementation-in-cpp/
+*/
 #include <bits/stdc++.h>
 typedef long long ll;
 using namespace std;
@@ -5,9 +8,9 @@ using namespace std;
 ll p = 7919, q =7907 ; //private key pair(p,q) of the form 3 mod 4
 
 ll n = p * q; 
-ll failcnt=0;       //public key n
-//n=62615533 /   
-ll countDigit(long long n)
+ll failcnt=0;       //fail count
+//n=62615533 public key  
+ll countDigit(long long n) //count the number of digits in a number
 {
     ll count = 0;
     while (n != 0)
@@ -16,8 +19,8 @@ ll countDigit(long long n)
         ++count;
     }
     return count;
-}      //....1    .....2
-ll countSetBits(ll num)
+}     
+ll countSetBits(ll num) // count the number of set bits in the binary representation of a number
     {
         ll count = 0;
         while (num) {
@@ -27,8 +30,20 @@ ll countSetBits(ll num)
         return count;
     }
 
-    bool isValid(ll num)
+    bool isValid(ll num) //to check whether a number is valid
     {
+        /*
+        A number is valid if:
+        last digit: if 1 then number/1000 should have even number of digits else if it is 0 then it should have odd number of digits
+        second last digit: 1 if number/1000 should have even number of set bits in binary representation else odd
+        third last digit: 1 if number/1000 should be even else odd
+        Four possible plain text are passed here from decrypter ..the one satisfying these conditions are valid. If more than one satisfy these conditions then we have failed.
+        Taking example from line 199
+        number=3727011
+        last digit=1 and the number/1000 has 4 digits hence ok
+        second last digit=1 and number/1000(3727) has even number of set bits hence ok
+        third last digit=0 and 3727 is odd hence ok
+        */
         if(num<1000)
         return false;
         ll lstd=num%10;
@@ -131,13 +146,14 @@ ll decrypter(ll c, ll p, ll q)
       ll s = modulo((rootp-rootq), n);
      ll negative_r = n - r;
       ll negative_s = n - s;
+    //Four possible plain text are r,s,negativbe_r,negative_s
       //cout<<r<<" "<<negative_r<<" "<<s<<" "<<negative_s<<endl;
       bool r1,s1,r2,s2;
       r1=isValid(r);
       r2=isValid(negative_r);
       s1=isValid(s);
       s2=isValid(negative_s);
-      ll vldc=0;
+      ll vldc=0;// how many of the four possible are valid:: if more than one then we have failed to determine actual text
       ll ans=0;
       if(r1)
       {
@@ -173,8 +189,19 @@ else{
 
 return -1;
 }
-ll tehk(ll num)
+ll tehk(ll num) // to convert a number into our system
 {
+    /*
+    if number is even we concatenate 1 to it else 0
+    if number has even number of set bits then we concatenate 1 to it else 0
+    if number has even number of digits then we concatinate 1 to it else 0
+    ex:
+    number =3727
+    since 3727 is odd => 37270
+    binary representation of 3727 is 111010001111 it has even number of set bits =>372701
+    number of digits in 3727 is 4 which is even => 3727011
+    and then we pass this number into encrypter
+    */
     ll num1;
     ll a=0,b=0;
     if(num%2==0)
@@ -206,42 +233,23 @@ int main()
 {
     vector<ll>e; //vector to store the encrypted message
     vector<ll>d; //vector to store the decrypted message
-    string message ="C";
-   // cout << "Plain text: " << message << endl;
-    ll len = strlen(message.c_str());
+   
     for(int i=0;i<100000;i++)
     {
-e.push_back(encrypter(tehk(i+1), n));
-        //cout << e[i]<<endl;
+e.push_back(encrypter(tehk(i+1), n));// encrypting numbers from 1 to 100001
+        //cout << e[i]<<endl; //uncomment to print encrypted number
     }
-   // e.push_back(encrypter(tehk(5), n));
-    //cout << "Encrypted text: ";
-    //for(int i = 0; i < len; i++)
-    //{   if(i==0)
-        //e.push_back(encrypter(tehk(10), n));
-       // cout << e[0];
-   // }
-   //number<(n-11)/100
-   //number_even_even1's
-   //check1-last 3 digits 1,0 ke alava---cut
-   //if i am gitting a definite answer
-   //loop 1-62615533(6*10^8)
-   //10111--decrypt-4 possible roots-check-one final answer--flg=true
-
-//132---
-//132111
+  
     cout << endl;
 
     for(int i = 0; i < 100000; i++)
     {
         d.push_back(decrypter(e[i], p, q));
-        //if(d[i]==-1)
-        cout << d[i]<<endl;
+        
+        cout << d[i]<<endl; //printing decrypted number
    }
-    //cout << "Decrypted text: ";
-   // for(int i=0;i<d.size();i++)
-     // cout << d[i];
-cout<<failcnt<<endl;
+   
+cout<<failcnt<<endl; //number of times it failed to determine actual text from the four possible roots
     cout << endl;
     return 0;
 }
